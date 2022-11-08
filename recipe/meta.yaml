@@ -41,13 +41,15 @@ test:
     - pip
 
 about:
-  home: https://huggingface.co/hardware
+  home: https://github.com/huggingface/optimum
   summary: |
     Optimum Library is an extension of the Hugging Face Transformers 
     library, providing a framework to integrate third-party libraries 
     from Hardware Partners and interface with their specific functionality.
   license: Apache-2.0
   license_file: LICENSE
+  license_family: Apache
+  license_url: https://github.com/huggingface/optimum/blob/main/LICENSE
   description: |
     🤗 Optimum is an extension of 🤗 Transformers, providing a set of performance 
     optimization tools enabling maximum efficiency to train and run models on 
@@ -60,7 +62,8 @@ about:
 
     PyPI: [https://pypi.org/project/optimum/](https://pypi.org/project/optimum/)
 
-  doc_url: https://huggingface.co/docs/optimum/
+  doc_url: https://huggingface.co/docs/optimum/index
+  doc_source_url: https://github.com/huggingface/optimum/tree/main/docs
   dev_url: https://github.com/huggingface/optimum
 
 extra:
