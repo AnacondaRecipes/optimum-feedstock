@@ -12,16 +12,18 @@ source:
 
 build:
   number: 0
-  noarch: python
+  skip: true  # [py<37]
   script:
     - {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
     - pip
-    - python >=3.7
+    - python
+    - setuptools
+    - wheel
   run:
-    - python >=3.7
+    - python
     - coloredlogs
     - sympy
     - pytorch >=1.9
