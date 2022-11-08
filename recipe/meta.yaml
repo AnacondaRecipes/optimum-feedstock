@@ -27,18 +27,10 @@ requirements:
     - coloredlogs
     - sympy
     - pytorch >=1.9
-    - transformers >=4.15.0
-    - huggingface_hub ==0.4.0
+    - transformers >=4.20.1
+    - huggingface_hub >=0.8.0
     - packaging
     - numpy
-    - requests
-    - tqdm
-    - pyyaml
-    # Dependencies necessary for passing pip-check
-    - onnx
-    - onnxruntime
-    - datasets >=1.2.1
-    - dill >=0.3.5.1
 
 test:
   imports:
