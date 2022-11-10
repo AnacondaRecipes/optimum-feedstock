@@ -1,5 +1,5 @@
 {% set name = "optimum" %}
-{% set version = "1.3.0" %}
+{% set version = "1.4.1" %}
 
 
 package:
@@ -7,36 +7,30 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/optimum-{{ version }}.tar.gz
-  sha256: e68a7a075571cfadf3eaa02513cfdd315f750ce01e8ed5b8d3b4ce785b5c9c7d
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: f10fdc4e1a9045a375ec78ffd66aad006458d96dbd378e8a5fe0ee997ee10903
 
 build:
   number: 0
-  noarch: python
+  skip: true  # [py<37]
   script:
     - {{ PYTHON }} -m pip install . -vv
 
 requirements:
   host:
     - pip
-    - python >=3.7
+    - python
+    - setuptools
+    - wheel
   run:
-    - python >=3.7
+    - python
     - coloredlogs
     - sympy
     - pytorch >=1.9
-    - transformers >=4.15.0
-    - huggingface_hub ==0.4.0
+    - transformers >=4.20.1
+    - huggingface_hub >=0.8.0
     - packaging
     - numpy
-    - requests
-    - tqdm
-    - pyyaml
-    # Dependencies necessary for passing pip-check
-    - onnx
-    - onnxruntime
-    - datasets >=1.2.1
-    - dill >=0.3.5.1
 
 test:
   imports:
@@ -47,13 +41,14 @@ test:
     - pip
 
 about:
-  home: https://huggingface.co/hardware
+  home: https://github.com/huggingface/optimum
   summary: |
     Optimum Library is an extension of the Hugging Face Transformers 
     library, providing a framework to integrate third-party libraries 
     from Hardware Partners and interface with their specific functionality.
   license: Apache-2.0
   license_file: LICENSE
+  license_family: Apache
   description: |
     🤗 Optimum is an extension of 🤗 Transformers, providing a set of performance 
     optimization tools enabling maximum efficiency to train and run models on 
@@ -66,9 +61,12 @@ about:
 
     PyPI: [https://pypi.org/project/optimum/](https://pypi.org/project/optimum/)
 
-  doc_url: https://huggingface.co/docs/optimum/
+  doc_url: https://huggingface.co/docs/optimum/index
   dev_url: https://github.com/huggingface/optimum
 
 extra:
   recipe-maintainers:
     - sugatoray
+  skip-lints:
+    - missing_license_url
+    - missing_doc_source_url
