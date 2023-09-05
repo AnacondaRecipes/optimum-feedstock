@@ -12,7 +12,10 @@ source:
 
 build:
   number: 0
-  skip: true  # [py<37]
+  # transformers >=4.26.0 is not available on s390x
+  skip: true  # [py<37 or s390x]
+  # Dropping ppc because of various pytorch build issues
+  skip: True  # [py>310 and (linux and ppc64le)]
   script:
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
@@ -71,6 +74,3 @@ about:
 extra:
   recipe-maintainers:
     - sugatoray
-  skip-lints:
-    - missing_license_url
-    - missing_doc_source_url
