@@ -1,5 +1,5 @@
 {% set name = "optimum" %}
-{% set version = "1.4.1" %}
+{% set version = "1.12.0" %}
 
 
 package:
@@ -8,13 +8,13 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: f10fdc4e1a9045a375ec78ffd66aad006458d96dbd378e8a5fe0ee997ee10903
+  sha256: a74e051c4d776a900b6452a12a36e0afadbebee112a8205a30adac9216a4991b
 
 build:
   number: 0
   skip: true  # [py<37]
   script:
-    - {{ PYTHON }} -m pip install . -vv
+    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
 
 requirements:
   host:
@@ -25,20 +25,24 @@ requirements:
   run:
     - python
     - coloredlogs
+    - datasets
     - sympy
     - pytorch >=1.9
-    - transformers >=4.20.1
     - huggingface_hub >=0.8.0
+    - transformers >=4.26.0
+    # transformers[sentencepiece] contains sentencepiece and protobuf, see https://github.com/huggingface/transformers/blob/v4.32.1/setup.py#L299
+    - sentencepiece >=0.1.91,!=0.1.92
+    - protobuf
     - packaging
     - numpy
 
 test:
   imports:
     - optimum
-  commands:
-    - pip check
   requires:
     - pip
+  commands:
+    - pip check
 
 about:
   home: https://github.com/huggingface/optimum
