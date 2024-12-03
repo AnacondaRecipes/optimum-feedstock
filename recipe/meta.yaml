@@ -44,7 +44,7 @@ requirements:
     - onnxruntime >=1.11.0
     - datasets >=1.2.1
     - protobuf >=3.20.1
-    - onnxruntime-gpu>=1.11.0
+    - onnxruntime-gpu >=1.11.0
 
 test:
   imports:
