@@ -12,8 +12,10 @@ source:
 
 build:
   number: 0
+  # transformers >=4.26.0 is not available on s390x
   # Dropping ppc because of various pytorch build issues
-  skip: true  # [py<37 or (linux and ppc64le)]
+  skip: true  # [linux and (ppc64le or s390x)]
+  skip: true  # [py<37]
   script:
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
