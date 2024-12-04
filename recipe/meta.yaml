@@ -1,5 +1,5 @@
 {% set name = "optimum" %}
-{% set version = "1.12.0" %}
+{% set version = "1.18.1" %}
 
 
 package:
@@ -8,16 +8,18 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: a74e051c4d776a900b6452a12a36e0afadbebee112a8205a30adac9216a4991b
+  sha256: c962cc02d55d698461cbc2e3fcf5522fab83ed846c3f904f5bed3efdc48a702b
 
 build:
   number: 0
   # transformers >=4.26.0 is not available on s390x
-  skip: true  # [py<37 or s390x]
   # Dropping ppc because of various pytorch build issues
-  skip: True  # [py>310 and (linux and ppc64le)]
+  skip: true  # [s390x]
+  skip: true  # [py<37]
   script:
     - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  entry_points:
+    - optimum-cli = optimum.commands.optimum_cli:main
 
 requirements:
   host:
@@ -28,20 +30,21 @@ requirements:
   run:
     - python
     - coloredlogs
-    - datasets
     - sympy
-    - pytorch >=1.9
-    - huggingface_hub >=0.8.0
-    - transformers >=4.26.0
+    - transformers >=4.26.0,<4.40.0
     # transformers[sentencepiece] contains sentencepiece and protobuf, see https://github.com/huggingface/transformers/blob/v4.32.1/setup.py#L299
     - sentencepiece >=0.1.91,!=0.1.92
     - protobuf
+    - pytorch >=1.11
     - packaging
     - numpy
+    - huggingface_hub >=0.8.0
+    - datasets
   run_contrained:
     - onnxruntime >=1.11.0
     - datasets >=1.2.1
-    - protobuf>=3.20.1
+    - protobuf >=3.20.1
+    - onnxruntime-gpu >=1.11.0
 
 test:
   imports:
@@ -50,28 +53,21 @@ test:
     - pip
   commands:
     - pip check
+    - optimum-cli --help
 
 about:
   home: https://github.com/huggingface/optimum
   summary: |
-    Optimum Library is an extension of the Hugging Face Transformers 
-    library, providing a framework to integrate third-party libraries 
-    from Hardware Partners and interface with their specific functionality.
+    🤗 Optimum is an extension of 🤗 Transformers and Diffusers, providing a set of 
+    optimization tools enabling maximum efficiency to train and run models on targeted hardware, 
+    while keeping things easy to use.
   license: Apache-2.0
   license_file: LICENSE
   license_family: Apache
   description: |
-    🤗 Optimum is an extension of 🤗 Transformers, providing a set of performance 
-    optimization tools enabling maximum efficiency to train and run models on 
-    targeted hardware.
-
-    The AI ecosystem evolves quickly and more and more specialized hardware along 
-    with their own optimizations are emerging every day. As such, Optimum enables 
-    users to efficiently use any of these platforms with the same ease inherent 
-    to transformers.
-
-    PyPI: [https://pypi.org/project/optimum/](https://pypi.org/project/optimum/)
-
+    🤗 Optimum is an extension of Transformers that provides a set of performance optimization tools to train and run models on targeted hardware with maximum efficiency.
+    The AI ecosystem evolves quickly, and more and more specialized hardware along with their own optimizations are emerging every day. 
+    As such, Optimum enables developers to efficiently use any of these platforms with the same ease inherent to Transformers.
   doc_url: https://huggingface.co/docs/optimum/index
   dev_url: https://github.com/huggingface/optimum
 
