@@ -53,6 +53,7 @@ test:
     - pip
   commands:
     - pip check
+    - optimum-cli --help
 
 about:
   home: https://github.com/huggingface/optimum
