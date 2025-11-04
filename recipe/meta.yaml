@@ -45,7 +45,7 @@ requirements:
 # E   ModuleNotFoundError: No module named 'optimum.exporters.onnx'
 # The optimum.exporters.onnx folder is not in the release tarball
 {% set ignore_tests = " --ignore=tests/exporters/common/test_tasks_manager.py" %}
-{% set ignore_tests = " --ignore=tests/pipelines/test_pipelines.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/pipelines/test_pipelines.py" %}
 # E   FileNotFoundError: [Errno 2] No such file or directory: optimum/commands/register/cli_with_custom_command.py
 {% set deselect_tests = " --deselect=tests/cli/test_cli.py::TestCLI::test_export_commands" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/cli/test_cli.py::TestCLI::test_register_command" %}
