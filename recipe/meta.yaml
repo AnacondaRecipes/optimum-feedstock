@@ -30,16 +30,8 @@ requirements:
     - numpy
     - huggingface_hub >=0.8.0
   run_contrained:
-    - optimum-amd
-    - optimum-furiosa
-    - optimum-graphcore
     - optimum-habana >=1.17.0
     - optimum-intel >=1.23.0
-    - ipex
-    - nncf
-    - neural-compressor
-    - optimum-onnx
-    - onnxruntime
     - optimum-quanto >=0.2.4
 
 # E   ModuleNotFoundError: No module named 'optimum.exporters.onnx'
