@@ -1,24 +1,20 @@
 {% set name = "optimum" %}
-{% set version = "1.24.0" %}
-
+{% set version = "2.0.0" %}
 
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: b502a2afbf78bb73370ebb1eff07b93108a1b386116e87eb17e882d210150551
+  url: https://github.com/huggingface/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: ce82abe0a8c86790d05fc18b8dd2fa3b35c1049886c894a1dfb44967307bda7d
 
 build:
   number: 0
-  # transformers >=4.26.0 is not available on s390x
-  skip: true  # [s390x]
-  skip: true  # [py<39]
-  script:
-    - {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - optimum-cli = optimum.commands.optimum_cli:main
+  skip: true  # [py<39]
 
 requirements:
   host:
@@ -34,21 +30,40 @@ requirements:
     - numpy
     - huggingface_hub >=0.8.0
   run_contrained:
-    - onnxruntime >=1.11.0
-    - datasets >=1.2.1
-    - protobuf >=3.20.1
-    - onnxruntime-gpu >=1.11.0
-    - onnxruntime-training >=1.11.0
-    - tensorflow >=2.4,<=2.12.1
+    - optimum-amd
+    - optimum-furiosa
+    - optimum-graphcore
+    - optimum-habana >=1.17.0
+    - optimum-intel >=1.23.0
+    - ipex
+    - nncf
+    - neural-compressor
+    - optimum-onnx
+    - onnxruntime
+    - optimum-quanto >=0.2.4
 
+# E   ModuleNotFoundError: No module named 'optimum.exporters.onnx'
+# The optimum.exporters.onnx folder is not in the release tarball
+{% set ignore_tests = " --ignore=tests/exporters/common/test_tasks_manager.py" %}
+{% set ignore_tests = " --ignore=tests/pipelines/test_pipelines.py" %}
+# E   FileNotFoundError: [Errno 2] No such file or directory: optimum/commands/register/cli_with_custom_command.py
+{% set deselect_tests = " --deselect=tests/cli/test_cli.py::TestCLI::test_export_commands" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/cli/test_cli.py::TestCLI::test_register_command" %}
 test:
+  source_files:
+    - tests
   imports:
     - optimum
-  requires:
-    - pip
   commands:
     - pip check
     - optimum-cli --help
+    - pytest -v tests {{ ignore_tests }} {{ deselect_tests }}
+  requires:
+    - pip
+    - pytest
+    - parameterized
+    - torchvision
+    - pillow
 
 about:
   home: https://github.com/huggingface/optimum
