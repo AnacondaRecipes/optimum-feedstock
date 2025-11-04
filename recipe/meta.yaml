@@ -14,7 +14,9 @@ build:
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - optimum-cli = optimum.commands.optimum_cli:main
-  skip: true  # [py<39]
+  # https://github.com/AnacondaRecipes/torchvision-feedstock/blob/master/recipe/meta.yaml#L46
+  # torchvision python 3.13 support will be introduced in v 0.21, see here https://github.com/pytorch/vision/issues/8730#issuecomment-2504291914
+  skip: true  # [py<39 or py>312]
 
 requirements:
   host:
@@ -41,6 +43,11 @@ requirements:
 # E   FileNotFoundError: [Errno 2] No such file or directory: optimum/commands/register/cli_with_custom_command.py
 {% set deselect_tests = " --deselect=tests/cli/test_cli.py::TestCLI::test_export_commands" %}
 {% set deselect_tests = deselect_tests + " --deselect=tests/cli/test_cli.py::TestCLI::test_register_command" %}
+# raise ValueError(f'mutable default {type(f.default)} for field '
+# E   ValueError: mutable default <class 'slice'> for field index is not allowed: use default_factory
+# Python 3.11 changed dataclass validation to strictly forbid mutable defaults (including slice objects)
+{% set deselect_tests = deselect_tests + " --deselect=tests/cli/test_cli.py::TestCLI::test_register_command" %}  # [py==311]
+
 test:
   source_files:
     - tests
