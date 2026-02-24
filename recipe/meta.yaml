@@ -1,5 +1,5 @@
 {% set name = "optimum" %}
-{% set version = "2.0.0" %}
+{% set version = "2.1.0" %}
 
 package:
   name: {{ name|lower }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://github.com/huggingface/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: ce82abe0a8c86790d05fc18b8dd2fa3b35c1049886c894a1dfb44967307bda7d
+  sha256: 0018581d9b21b6ff405fcf7abf9b3acd86901439985b8999ac1e84f0ad42cd48
 
 build:
   number: 0
@@ -39,6 +39,8 @@ requirements:
 # E   ModuleNotFoundError: No module named 'optimum.exporters.onnx'
 # The optimum.exporters.onnx folder is not in the release tarball
 {% set ignore_tests = " --ignore=tests/exporters/common/test_tasks_manager.py" %}
+# Missing auto-gptq package
+{% set ignore_tests = ignore_tests + " --ignore=tests/gptq/test_quantization.py" %}
 {% set ignore_tests = ignore_tests + " --ignore=tests/pipelines/test_pipelines.py" %}
 # E   FileNotFoundError: [Errno 2] No such file or directory: optimum/commands/register/cli_with_custom_command.py
 {% set deselect_tests = " --deselect=tests/cli/test_cli.py::TestCLI::test_export_commands" %}
@@ -47,6 +49,15 @@ requirements:
 # E   ValueError: mutable default <class 'slice'> for field index is not allowed: use default_factory
 # Python 3.11 changed dataclass validation to strictly forbid mutable defaults (including slice objects)
 {% set ignore_tests = ignore_tests + " --ignore=tests/fx/parallelization/test_tensor_parallel.py" %}  # [py==311]
+# Some tests requires pytorch >=2.6 but it cannot be installed because of conflict with torchvision
+# https://github.com/AnacondaRecipes/torchvision-feedstock/blob/master/recipe/meta.yaml#L8
+# E ValueError: Due to a serious vulnerability issue in `torch.load`, even with `weights_only=True`,
+# we now require users to upgrade torch to at least v2.6 in order to use the function.
+# This version restriction does not apply when loading files with safetensors.
+{% set deselect_tests = deselect_tests + " --deselect=tests/fx/optimization/test_transformations.py::TransformationTester::test_transformation_1" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/fx/optimization/test_transformations.py::TransformationTester::test_transformation_2" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/fx/optimization/test_transformations.py::test_fuse_conv2d_batchnorm2d" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/fx/optimization/test_transformations.py::test_fuse_linear_batchnorm1d" %}
 
 test:
   source_files:
