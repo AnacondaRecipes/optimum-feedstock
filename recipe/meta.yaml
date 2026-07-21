@@ -1,13 +1,26 @@
 {% set name = "optimum" %}
-{% set version = "2.1.0" %}
+{% set version = "2.2.0" %}
+{% set ignore_tests = " --ignore=tests/exporters/common/test_tasks_manager.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/gptq/test_quantization.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/pipelines/test_pipelines.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/fx/parallelization/test_tensor_parallel.py" %}  # [py==311]
+{% set deselect_tests = " --deselect=tests/cli/test_cli.py::TestCLI::test_export_commands" %}
+{% set deselect_tests = 'deselect_tests + " --deselect=tests/cli/test_cli.py::TestCLI::test_register_command"' %}
 
+# E   ModuleNotFoundError: No module named 'optimum.exporters.onnx'
+# The optimum.exporters.onnx folder is not in the release tarball
+# Missing auto-gptq package
+# E   FileNotFoundError: [Errno 2] No such file or directory: optimum/commands/register/cli_with_custom_command.py
+# raise ValueError(f'mutable default {type(f.default)} for field '
+# E   ValueError: mutable default <class 'slice'> for field index is not allowed: use default_factory
+# Python 3.11 changed dataclass validation to strictly forbid mutable defaults (including slice objects)
 package:
   name: {{ name|lower }}
   version: {{ version }}
 
 source:
   url: https://github.com/huggingface/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 0018581d9b21b6ff405fcf7abf9b3acd86901439985b8999ac1e84f0ad42cd48
+  sha256: a6ed7c43f635ce8f4ab5373ae4b94f7948a1e25193878b4cc8debe83c84b9d84
 
 build:
   number: 0
@@ -22,6 +35,7 @@ requirements:
     - python
     - setuptools
     - wheel
+    - pytorch {{ pytorch }}
   run:
     - python
     - transformers >=4.29
@@ -33,20 +47,6 @@ requirements:
     - optimum-habana >=1.17.0
     - optimum-intel >=1.23.0
     - optimum-quanto >=0.2.4
-
-# E   ModuleNotFoundError: No module named 'optimum.exporters.onnx'
-# The optimum.exporters.onnx folder is not in the release tarball
-{% set ignore_tests = " --ignore=tests/exporters/common/test_tasks_manager.py" %}
-# Missing auto-gptq package
-{% set ignore_tests = ignore_tests + " --ignore=tests/gptq/test_quantization.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/pipelines/test_pipelines.py" %}
-# E   FileNotFoundError: [Errno 2] No such file or directory: optimum/commands/register/cli_with_custom_command.py
-{% set deselect_tests = " --deselect=tests/cli/test_cli.py::TestCLI::test_export_commands" %}
-{% set deselect_tests = deselect_tests + " --deselect=tests/cli/test_cli.py::TestCLI::test_register_command" %}
-# raise ValueError(f'mutable default {type(f.default)} for field '
-# E   ValueError: mutable default <class 'slice'> for field index is not allowed: use default_factory
-# Python 3.11 changed dataclass validation to strictly forbid mutable defaults (including slice objects)
-{% set ignore_tests = ignore_tests + " --ignore=tests/fx/parallelization/test_tensor_parallel.py" %}  # [py==311]
 
 test:
   source_files:
@@ -67,15 +67,15 @@ test:
 about:
   home: https://github.com/huggingface/optimum
   summary: |
-    🤗 Optimum is an extension of 🤗 Transformers and Diffusers, providing a set of 
-    optimization tools enabling maximum efficiency to train and run models on targeted hardware, 
+    🤗 Optimum is an extension of 🤗 Transformers and Diffusers, providing a set of
+    optimization tools enabling maximum efficiency to train and run models on targeted hardware,
     while keeping things easy to use.
   license: Apache-2.0
   license_file: LICENSE
   license_family: Apache
   description: |
     🤗 Optimum is an extension of Transformers that provides a set of performance optimization tools to train and run models on targeted hardware with maximum efficiency.
-    The AI ecosystem evolves quickly, and more and more specialized hardware along with their own optimizations are emerging every day. 
+    The AI ecosystem evolves quickly, and more and more specialized hardware along with their own optimizations are emerging every day.
     As such, Optimum enables developers to efficiently use any of these platforms with the same ease inherent to Transformers.
   doc_url: https://huggingface.co/docs/optimum/index
   dev_url: https://github.com/huggingface/optimum
