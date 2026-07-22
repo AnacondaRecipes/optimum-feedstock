@@ -6,8 +6,8 @@ package:
   version: {{ version }}
 
 source:
-  -  url: https://github.com/huggingface/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  -  sha256: a6ed7c43f635ce8f4ab5373ae4b94f7948a1e25193878b4cc8debe83c84b9d84
+  url: https://github.com/huggingface/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  sha256: a6ed7c43f635ce8f4ab5373ae4b94f7948a1e25193878b4cc8debe83c84b9d84
 
 build:
   number: 0
@@ -22,7 +22,7 @@ requirements:
     - python
     - setuptools
     - wheel
-    # - pytorch {{ pytorch }}
+    - pytorch {{ pytorch }}
   run:
     - python
     - transformers >=4.29
