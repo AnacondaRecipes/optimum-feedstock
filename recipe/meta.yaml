@@ -1,33 +1,20 @@
 {% set name = "optimum" %}
 {% set version = "2.2.0" %}
-{% set ignore_tests = " --ignore=tests/exporters/common/test_tasks_manager.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/gptq/test_quantization.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/pipelines/test_pipelines.py" %}
-{% set ignore_tests = ignore_tests + " --ignore=tests/fx/parallelization/test_tensor_parallel.py" %}  # [py==311]
-{% set deselect_tests = " --deselect=tests/cli/test_cli.py::TestCLI::test_export_commands" %}
-{% set deselect_tests = 'deselect_tests + " --deselect=tests/cli/test_cli.py::TestCLI::test_register_command"' %}
 
-# E   ModuleNotFoundError: No module named 'optimum.exporters.onnx'
-# The optimum.exporters.onnx folder is not in the release tarball
-# Missing auto-gptq package
-# E   FileNotFoundError: [Errno 2] No such file or directory: optimum/commands/register/cli_with_custom_command.py
-# raise ValueError(f'mutable default {type(f.default)} for field '
-# E   ValueError: mutable default <class 'slice'> for field index is not allowed: use default_factory
-# Python 3.11 changed dataclass validation to strictly forbid mutable defaults (including slice objects)
 package:
-  name: {{ name|lower }}
+  name: {{ name}}
   version: {{ version }}
 
 source:
-  url: https://github.com/huggingface/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: a6ed7c43f635ce8f4ab5373ae4b94f7948a1e25193878b4cc8debe83c84b9d84
+  -  url: https://github.com/huggingface/{{ name }}/archive/refs/tags/v{{ version }}.tar.gz
+  -  sha256: a6ed7c43f635ce8f4ab5373ae4b94f7948a1e25193878b4cc8debe83c84b9d84
 
 build:
   number: 0
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation -vv
   entry_points:
     - optimum-cli = optimum.commands.optimum_cli:main
-  skip: true  # [py<39 or py>313]
+  skip: true  # [py<39]
 
 requirements:
   host:
@@ -35,7 +22,7 @@ requirements:
     - python
     - setuptools
     - wheel
-    - pytorch {{ pytorch }}
+    # - pytorch {{ pytorch }}
   run:
     - python
     - transformers >=4.29
@@ -44,9 +31,30 @@ requirements:
     - numpy
     - huggingface_hub >=0.8.0
   run_contrained:
+    # habana
     - optimum-habana >=1.17.0
+    # intel
     - optimum-intel >=1.23.0
+    # quanto
     - optimum-quanto >=0.2.4
+
+# E   ModuleNotFoundError: No module named 'optimum.exporters.onnx'
+# The optimum.exporters.onnx folder is not in the release tarball
+# Missing auto-gptq package
+# E   FileNotFoundError: [Errno 2] No such file or directory: optimum/commands/register/cli_with_custom_command.py
+# raise ValueError(f'mutable default {type(f.default)} for field '
+# E   ValueError: mutable default <class 'slice'> for field index is not allowed: use default_factory
+# Python 3.11 changed dataclass validation to strictly forbid mutable defaults (including slice objects)
+{% set ignore_tests = " --ignore=tests/exporters/common/test_tasks_manager.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/gptq/test_quantization.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/pipelines/test_pipelines.py" %}
+{% set ignore_tests = ignore_tests + " --ignore=tests/fx/parallelization/test_tensor_parallel.py" %}  # [py==311]
+# E   ModuleNotFoundError: No module named 'transformers.utils.fx'
+# need to have upperbound on transformers version, which is contradict with the upstream
+# utils.fx is not a part of transformers >=5.0
+{% set ignore_tests = ignore_tests + " --ignore=tests/fx/optimization/test_transformations.py" %}
+{% set deselect_tests = " --deselect=tests/cli/test_cli.py::TestCLI::test_export_commands" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/cli/test_cli.py::TestCLI::test_register_command" %}
 
 test:
   source_files:
@@ -60,9 +68,18 @@ test:
   requires:
     - pip
     - pytest
+    - accelerate
+    - requests
     - parameterized
-    - torchvision
+    - pytest-xdist
     - pillow
+    - sacremoses
+    - torchvision
+    - torchaudio
+    - einops
+    - scikit-learn
+    - sentencepiece
+    - hf-xet
 
 about:
   home: https://github.com/huggingface/optimum
