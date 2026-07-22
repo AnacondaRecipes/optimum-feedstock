@@ -22,7 +22,6 @@ requirements:
     - python
     - setuptools
     - wheel
-    - pytorch {{ pytorch }}
   run:
     - python
     - transformers >=4.29
